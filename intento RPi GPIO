@@ -1,0 +1,44 @@
+import RPi.GPIO as GPIO
+import time
+
+ECHO_PIN = 20
+TRIGGER_PIN = 21
+
+# Configurar la Raspberry Pi GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(TRIGGER_PIN, GPIO.OUT)
+GPIO.setup(ECHO_PIN, GPIO.IN)
+
+def measure_distance():
+    # El pin TRIGGER comienza en bajo
+    GPIO.output(TRIGGER_PIN, GPIO.LOW)
+    time.sleep(0.002)  # Esperar 2 milisegundos
+
+    # Generar un pulso de 10 microsegundos en el pin TRIGGER
+    GPIO.output(TRIGGER_PIN, GPIO.HIGH)
+    time.sleep(0.00001)  # Esperar 10 microsegundos
+    GPIO.output(TRIGGER_PIN, GPIO.LOW)
+
+    # Medir la duración del pulso de eco (en segundos)
+    while GPIO.input(ECHO_PIN) == GPIO.LOW:
+        pulse_start = time.time()
+    while GPIO.input(ECHO_PIN) == GPIO.HIGH:
+        pulse_end = time.time()
+
+    # Calcular la distancia (en centímetros) usando la velocidad del sonido (343 m/s)
+    pulse_duration = pulse_end - pulse_start
+    distance = pulse_duration * 34300 / 2
+
+    return distance
+
+def main():
+    try:
+        while True:
+            distance = measure_distance()
+            print("Distance: {:.2f} cm".format(distance))
+            time.sleep(1)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
+if __name__ == "__main__":
+    main()
