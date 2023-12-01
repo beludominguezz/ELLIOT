@@ -37,6 +37,6 @@ try:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-#finally:
+finally:
     picam2.stop()
-   # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
